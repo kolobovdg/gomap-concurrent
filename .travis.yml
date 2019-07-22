@@ -8,7 +8,6 @@ language: go
 # responsibility to keep their compilers up to date.
 go:
   - 1.12.x
-  - tip
 
 # Only clone the most recent commit.
 git:
