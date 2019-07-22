@@ -29,8 +29,10 @@ func NewMapWithResolver(resolver ShardResolver, shardCount uint16) GConcMap {
 }
 
 func (cm GConcMap) Get(key interface{}) (interface{}, bool) {
+	// Select shard
 	shard := cm.GetShard(key)
 
+	// Safely get item
 	shard.RLock()
 	value, ok := shard.items[key]
 	shard.RUnlock()
