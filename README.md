@@ -1,4 +1,5 @@
 # gomap-concurrent
+[![Build Status](https://api.travis-ci.com/kolobovdg/gomap-concurrent.svg?branch=master)](https://api.travis-ci.com/kolobovdg/gomap-concurrent)
 
 Concurrent general-purpose shared map for using with flexible data.
 
