@@ -28,5 +28,43 @@ go test "github.com/kolobovdg/gomap-concurrent"
 ## Examples
 
 ```go
+    // Resolver examples avaliable in map_resolvers.go
+    func baseIntResolver(key interface{}, sCount uint16) uint {
+    	return uint(key.(int)) % uint(sCount)
+    }
+	targetShards := uint16(32)
+	m := NewMapWithResolver(resolver, targetShards)
 
+	value := "x"
+
+	m.Set(key, value)               // Set
+	value, exists := m.Get(key)     // Get
+	value, exists := m.Delete(key)  // Del
+	
+	lenOfMap := m.Len()
+```
+
+In case of need to store different types of keys:
+```go
+    // Test struct for make an example of struct resolving in shared map
+    type TestStruct struct {
+    	sVar    string
+    	uintVar uint32
+    }
+    
+    // Example resolver for mixed types of keys
+    func exampleTestMixedStructResolver(key interface{}, sCount uint16) uint {
+    	switch key.(type) {
+    	case int:
+    		return baseIntResolver(key, sCount)
+    	case uint32:
+    		return baseUint32Resolver(key, sCount)
+    	case string:
+    		return baseStringResolver(key, sCount)
+    	case TestStruct:
+    		return exampleTestStructResolver(key, sCount)
+    	}
+    	// Default case if any others didn't fit
+    	return 0
+    }
 ```
