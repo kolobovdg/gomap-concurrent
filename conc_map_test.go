@@ -1,7 +1,10 @@
 package gomap_concurrent
 
 import (
+	"math/rand"
+	"strconv"
 	"testing"
+	"time"
 )
 
 func TestMapCreation(t *testing.T) {
@@ -40,6 +43,55 @@ func TestGMapCRUD(t *testing.T) {
 		} else {
 			t.Error("Where is key set problem")
 		}
+	}
+}
+
+func _tryGetSetDel(t *testing.T, resolver func(key interface{}, shards uint16) uint, key interface{}) {
+	targetShards := uint16(32)
+	m := NewMapWithResolver(resolver, targetShards)
+
+	// Prepare value to simplification different tests
+	val := "x"
+
+	m.Set(key, val)
+
+	if l := m.Len(); l != 1 {
+		t.Error("Fail set element during test")
+	}
+
+	if v, _ := m.Get(key); v.(string) != val {
+		t.Error("Value vas corrupted")
+	}
+
+	m.Delete(key)
+	if l := m.Len(); l != 0 {
+		t.Error("Fail del element during test")
+	}
+}
+
+func TestUintResolver(t *testing.T) {
+	_tryGetSetDel(t, baseUint32Resolver, uint32(rand.Uint32()))
+}
+
+func TestStringResolver(t *testing.T) {
+	_tryGetSetDel(t, baseStringResolver, strconv.Itoa(rand.Int()))
+}
+
+func TestStructResolver(t *testing.T) {
+	rnd := rand.Uint32()
+
+	_tryGetSetDel(t, exampleTestStructResolver,
+		TestStruct{sVar: strconv.Itoa(int(rnd + 1)), uintVar: rnd})
+}
+
+func TestMixedResolver(t *testing.T) {
+	var varsList []interface{}
+
+	// Try to use different types + time.Time to show default sharder works
+	varsList = append(varsList, rand.Int(), rand.Uint32(), strconv.Itoa(rand.Int()),
+		TestStruct{sVar: strconv.Itoa(rand.Int()), uintVar: rand.Uint32()}, time.Now())
+	for _, v := range varsList {
+		_tryGetSetDel(t, exampleTestMixedStructResolver, v)
 	}
 
 }
