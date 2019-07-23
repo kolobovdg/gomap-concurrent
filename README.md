@@ -5,7 +5,10 @@
 [![GolangCI](https://golangci.com/badges/github.com/kolobovdg/gomap-concurrent.svg)](https://golangci.com)
 [![codecov](https://codecov.io/gh/kolobovdg/gomap-concurrent/branch/master/graph/badge.svg)](https://codecov.io/gh/kolobovdg/gomap-concurrent)
 
-Concurrent general-purpose shared map for using with flexible data.
+Concurrent general-purpose shared map for using with flexible key/value data.
+Suggest minimal expenditure of effort for configuration and best perfomance.
+
+Thread-safety!
 
 ## Import
 
@@ -30,18 +33,20 @@ go test "github.com/kolobovdg/gomap-concurrent"
 ```go
     // Resolver examples avaliable in map_resolvers.go
     func baseIntResolver(key interface{}, sCount uint16) uint {
-    	return uint(key.(int)) % uint(sCount)
+        return uint(key.(int)) % uint(sCount)
     }
-	targetShards := uint16(32)
-	m := NewMapWithResolver(resolver, targetShards)
 
-	value := "x"
-
-	m.Set(key, value)               // Set
-	value, exists := m.Get(key)     // Get
-	value, exists := m.Delete(key)  // Del
-	
-	lenOfMap := m.Len()
+    
+    targetShards := uint16(32)
+    m := NewMapWithResolver(resolver, targetShards)
+    
+    value := "x"
+    
+    m.Set(key, value)               // Set
+    value, exists := m.Get(key)     // Get
+    value, exists := m.Delete(key)  // Del
+    
+    lenOfMap := m.Len()
 ```
 
 In case of need to store different types of keys:
